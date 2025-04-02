@@ -1,98 +1,154 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from "axios";
 import { 
   Home, User, Clock, DollarSign, AlertCircle, 
   Bell, Menu, Edit, Save, X, Camera
 } from 'lucide-react';
 
 const Profile = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState('profile');
+  const [studentUser, setStudentUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState(null);
+
+  
 
   // Mock student data
-  const [studentUser, setStudentUser] = useState({
-    name: 'John Doe',
-    email: 'john.doe@university.edu',
-    phone: '+91 9876543210',
-    profileImage: '/api/placeholder/200/200',
-    roomNumber: '204',
-    block: 'A',
-    semester: '5th',
-    course: 'Computer Science',
-    admissionYear: '2022',
-    rollNumber: 'CS2022045',
-    address: '123 College Road, Bangalore',
-    parentName: 'James Doe',
-    parentPhone: '+91 9876543211',
-    bloodGroup: 'O+',
-    dateOfBirth: '2001-05-15',
-    stats: {
-      attendance: 92,
-      outstandingFees: 5000,
-      complaints: 1,
-      messCredit: 2500
-    }
-  });
+  // const [studentUser, setStudentUser] = useState({
+  //   name: 'John Doe',
+  //   email: 'john.doe@university.edu',
+  //   phone: '+91 9876543210',
+  //   profileImage: '/api/placeholder/200/200',
+  //   roomNumber: '204',
+  //   block: 'A',
+  //   semester: '5th',
+  //   course: 'Computer Science',
+  //   admissionYear: '2022',
+  //   rollNumber: 'CS2022045',
+  //   address: '123 College Road, Bangalore',
+  //   parentName: 'James Doe',
+  //   parentPhone: '+91 9876543211',
+  //   bloodGroup: 'O+',
+  //   dateOfBirth: '2001-05-15',
+  //   stats: {
+  //     attendance: 92,
+  //     outstandingFees: 5000,
+  //     complaints: 1,
+  //     messCredit: 2500
+  //   }
+  // });
 
   // Form state
-  const [formData, setFormData] = useState({...studentUser});
+  // const [formData, setFormData] = useState({...studentUser});
+
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value
+  //   });
+  // };
+
+  // const handleSave = () => {
+  //   setStudentUser({...formData});
+  //   setIsEditing(false);
+  // };
+
+  // const handleCancel = () => {
+  //   setFormData({...studentUser});
+  //   setIsEditing(false);
+  // };
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/student/profile/67e8414d43e73a303472c00a'); // Replace with actual student ID
+        setStudentUser(response.data);
+        setFormData(response.data); // Initialize formData
+      } catch (error) {
+        console.error('Error fetching student data:', error);
+      }
+    };
+    fetchStudentData();
+  }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    setStudentUser({...formData});
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setFormData({...studentUser});
-    setIsEditing(false);
-  };
-
-  const menuItems = [
-    { 
-      icon: <Home />, 
-      label: 'Dashboard', 
-      section: 'dashboard',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <User />, 
-      label: 'Profile', 
-      section: 'profile',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <Clock />, 
-      label: 'Attendance', 
-      section: 'attendance',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <DollarSign />, 
-      label: 'Fees', 
-      section: 'fees',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <AlertCircle />, 
-      label: 'Complaints', 
-      section: 'complaints',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <Bell />, 
-      label: 'Noticeboard', 
-      section: 'noticeboard',
-      roles: ['student', 'warden'] 
+  const handleSave = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/student/${studentUser._id}`, formData);
+      setStudentUser(formData);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating student data:', error);
+      alert('Failed to update profile. Please try again.');
     }
-  ];
+  };
+  
+  const handleCancel = () => {
+    setFormData({ ...studentUser });
+    setIsEditing(false);
+  };
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('profileImage', file);
+  
+    try {
+      const response = await axios.put(`http://localhost:5000/api/student/${studentUser._id}/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setStudentUser({ ...studentUser, profileImage: response.data.profileImage });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+  
+
+  if (!studentUser) return <p>Loading...</p>;
+
+  // const menuItems = [
+  //   { 
+  //     icon: <Home />, 
+  //     label: 'Dashboard', 
+  //     section: 'dashboard',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <User />, 
+  //     label: 'Profile', 
+  //     section: 'profile',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <Clock />, 
+  //     label: 'Attendance', 
+  //     section: 'attendance',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <DollarSign />, 
+  //     label: 'Fees', 
+  //     section: 'fees',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <AlertCircle />, 
+  //     label: 'Complaints', 
+  //     section: 'complaints',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <Bell />, 
+  //     label: 'Noticeboard', 
+  //     section: 'noticeboard',
+  //     roles: ['student', 'warden'] 
+  //   }
+  // ];
 
   const renderProfileContent = () => {
     return (
@@ -227,6 +283,19 @@ const Profile = () => {
                     onChange={handleInputChange}
                     className="mt-1 p-2 w-full border rounded-md"
                   />
+                </div>
+                <div>
+                <input 
+  type="file" 
+  accept="image/*" 
+  onChange={handleImageChange} 
+  className="hidden" 
+  id="profileImageUpload"
+/>
+<label htmlFor="profileImageUpload" className="absolute bottom-2 right-2 bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600 cursor-pointer">
+  <Camera size={20} />
+</label>
+
                 </div>
               </div>
             ) : (

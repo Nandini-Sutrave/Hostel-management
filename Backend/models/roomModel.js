@@ -7,4 +7,4 @@ const roomSchema = new mongoose.Schema({
   occupants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }]
 }, { timestamps: true });
 
-module.exports = mongoose.model('Room', roomSchema);
+module.exports = mongoose.model('roomModel', roomSchema);

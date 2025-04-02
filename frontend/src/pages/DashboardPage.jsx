@@ -1,70 +1,95 @@
-import React, { useState,UseEffect } from 'react';
-//import axios from "axios";
+import React, { useState,useEffect } from 'react';
+import axios from "axios";
 import { 
   Home, User, Clock, DollarSign, AlertCircle, 
   LogIn, Bell, Package, MessageSquare, Menu 
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState('dashboard');
 
-  // Mock student data
-  const studentUser = {
-    name: 'John Doe',
-    profileImage: '/api/placeholder/200/200',
-    roomNumber: '204',
-    block: 'A',
-    semester: '5th',
-    course: 'Computer Science',
-    stats: {
-      attendance: 92,
-      outstandingFees: 5000,
-      complaints: 1,
-      messCredit: 2500
-    }
-  };
+  // State for fetched data
+  const [studentUser, setStudentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const menuItems = [
-    { 
-      icon: <Home />, 
-      label: 'Dashboard', 
-      section: 'dashboard',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <User />, 
-      label: 'Profile', 
-      section: 'profile',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <Clock />, 
-      label: 'Attendance', 
-      section: 'attendance',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <DollarSign />, 
-      label: 'Fees', 
-      section: 'fees',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <AlertCircle />, 
-      label: 'Complaints', 
-      section: 'complaints',
-      roles: ['student', 'warden'] 
-    },
-    { 
-      icon: <Bell />, 
-      label: 'Noticeboard', 
-      section: 'noticeboard',
-      roles: ['student', 'warden'] 
-    }
-  ];
+  // Fetch student data from backend
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const { data } = await axios.get("/api/student/profile/"); // Adjust endpoint if needed
+        setStudentUser(data.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentData();
+  }, []);
+
+  // Mock student data
+  // const studentUser = {
+  //   name: 'John Doe',
+  //   profileImage: '/api/placeholder/200/200',
+  //   roomNumber: '204',
+  //   block: 'A',
+  //   semester: '5th',
+  //   course: 'Computer Science',
+  //   stats: {
+  //     attendance: 92,
+  //     outstandingFees: 5000,
+  //     complaints: 1,
+  //     messCredit: 2500
+  //   }
+  // };
+
+  // const menuItems = [
+  //   { 
+  //     icon: <Home />, 
+  //     label: 'Dashboard', 
+  //     section: 'dashboard',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <User />, 
+  //     label: 'Profile', 
+  //     section: 'profile',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <Clock />, 
+  //     label: 'Attendance', 
+  //     section: 'attendance',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <DollarSign />, 
+  //     label: 'Fees', 
+  //     section: 'fees',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <AlertCircle />, 
+  //     label: 'Complaints', 
+  //     section: 'complaints',
+  //     roles: ['student', 'warden'] 
+  //   },
+  //   { 
+  //     icon: <Bell />, 
+  //     label: 'Noticeboard', 
+  //     section: 'noticeboard',
+  //     roles: ['student', 'warden'] 
+  //   }
+  // ];
 
   const renderStudentDetails = () => {
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+    if (!studentUser) return <p>No student data available</p>;
+
     const { name, profileImage, roomNumber, block, semester, course, stats } = studentUser;
     return (
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">

@@ -13,7 +13,7 @@ exports.getAllRooms = async (req, res) => {
 
 exports.getRoomDetails = async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id).populate('students');
+    const room = await Room.findById(req.params.id).populate('occupants');
     res.status(200).json({ success: true, data: room });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
