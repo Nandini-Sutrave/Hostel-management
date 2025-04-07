@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const upload = require('../middleware/uploadMiddleware');
 const authMiddleware = require('../middleware/authMiddleware');
 const validate = require('../middleware/validate');
 const {
@@ -12,7 +13,7 @@ const {
 } = require('../middleware/validationMiddleware');
 
 // 🔓 Public routes
-router.post('/register', validate(registerSchema), authController.register);
+router.post('/register',  upload.single('profileImage'), validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
 router.post('/forgot-password', validate(forgotPasswordSchema), authController.forgotPassword);
 router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword);

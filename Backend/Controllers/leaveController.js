@@ -1,17 +1,19 @@
 const Leave = require('../models/leaveModel');
-const Student = require('../models/studentModel');
+const User = require('../models/userModel'); // ✅ Replacing Student
 
 // Student applies for leave
 exports.applyLeave = async (req, res) => {
   const { startDate, endDate, reason } = req.body;
+
   try {
     const leave = new Leave({
-      student: req.user.id,
+      student: req.user.id, // ✅ req.user populated from auth middleware
       startDate,
       endDate,
       reason,
       status: 'Pending'
     });
+
     await leave.save();
     res.status(201).json({ success: true, data: leave });
   } catch (error) {
@@ -32,7 +34,11 @@ exports.getMyLeaves = async (req, res) => {
 // Warden views all leave applications
 exports.getAllLeaves = async (req, res) => {
   try {
-    const leaves = await Leave.find().populate('student', 'name rollNumber');
+    const leaves = await Leave.find().populate({
+      path: 'student',
+      select: 'name rollNumber role',
+      match: { role: 'student' } // ✅ ensure only students' leaves show up
+    });
     res.status(200).json({ success: true, data: leaves });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

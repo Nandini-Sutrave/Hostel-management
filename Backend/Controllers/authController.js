@@ -16,24 +16,43 @@ const generateToken = (user) => {
   );
 };
 
+const path = require('path');
+const fs = require('fs');
+
+
 exports.register = async (req, res) => {
   try {
     const {
-      name, email, password, role, phone, gender,
-      // Student fields
-      year, branch, dateOfBirth, address,
-      guardianName, guardianPhone, bloodGroup,
-      // Warden fields
+      name, email, password, phone, gender, role,
+      roomNumber, block, semester, year, branch,
+      dateOfBirth, address, guardianName, guardianPhone, bloodGroup,
       joiningDate, department
     } = req.body;
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: 'User already exists' });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
 
+    // Check if student room number is already taken in same block
+    if (role === 'student' && roomNumber && block) {
+      const roomTaken = await User.findOne({
+        role: 'student',
+        roomNumber,
+        block
+      });
+
+      if (roomTaken) {
+        return res.status(400).json({ message: 'Same room number not allowed in a block' });
+      }
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    // Create new user object
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
@@ -42,9 +61,12 @@ exports.register = async (req, res) => {
       gender
     });
 
+    // Add student-specific fields
     if (role === 'student') {
-      const student = new Student({
-        user: newUser._id,
+      Object.assign(newUser, {
+        roomNumber,
+        block,
+        semester,
         year,
         branch,
         dateOfBirth,
@@ -53,24 +75,36 @@ exports.register = async (req, res) => {
         guardianPhone,
         bloodGroup
       });
-      await student.save();
-    } else if (role === 'warden') {
-      const warden = new Warden({
-        user: newUser._id,
+    }
+
+    // Add warden-specific fields
+    if (role === 'warden') {
+      Object.assign(newUser, {
         joiningDate,
         department
       });
-      await warden.save();
     }
 
-    const token = generateToken(newUser);
-    res.status(201).json({ message: 'User registered', token, user: newUser });
+    // Handle profile image if uploaded
+    if (req.file) {
+      newUser.profileImage = req.file.path;
+    }
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    await newUser.save();
+
+    return res.status(201).json({ message: 'User registered successfully' });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).json({ message: 'Something went wrong during registration' });
   }
 };
+
+
+
+
+
+
 
 exports.login = async (req, res) => {
   try {

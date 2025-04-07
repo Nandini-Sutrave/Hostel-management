@@ -8,8 +8,25 @@ exports.registerSchema = Joi.object({
   phone: Joi.string().required(),
   gender: Joi.string().valid('Male', 'Female', 'Other').required(),
 
+  profileImage: Joi.string(), // Optional file path as string
+
   // Student-specific fields
-  year: Joi.number().when('role', {
+  roomNumber: Joi.string().when('role', {
+    is: 'student',
+    then: Joi.required(),
+    otherwise: Joi.forbidden()
+  }),
+  block: Joi.string().when('role', {
+    is: 'student',
+    then: Joi.required(),
+    otherwise: Joi.forbidden()
+  }),
+  semester: Joi.string().when('role', {
+    is: 'student',
+    then: Joi.required(),
+    otherwise: Joi.forbidden()
+  }),
+  year: Joi.string().when('role', {
     is: 'student',
     then: Joi.required(),
     otherwise: Joi.forbidden()
@@ -19,7 +36,7 @@ exports.registerSchema = Joi.object({
     then: Joi.required(),
     otherwise: Joi.forbidden()
   }),
-  dateOfBirth: Joi.date().when('role', {
+  dateOfBirth: Joi.string().when('role', {
     is: 'student',
     then: Joi.required(),
     otherwise: Joi.forbidden()
@@ -46,7 +63,7 @@ exports.registerSchema = Joi.object({
   }),
 
   // Warden-specific fields
-  joiningDate: Joi.date().when('role', {
+  joiningDate: Joi.string().when('role', {
     is: 'warden',
     then: Joi.required(),
     otherwise: Joi.forbidden()
@@ -57,6 +74,7 @@ exports.registerSchema = Joi.object({
     otherwise: Joi.forbidden()
   })
 });
+
 exports.loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required()

@@ -1,7 +1,7 @@
-// controllers/roomController.js
 const Room = require('../models/roomModel');
-const Student = require('../models/studentModel');
+const User = require('../models/userModel'); // ✅ Replacing Student
 
+// Get all rooms
 exports.getAllRooms = async (req, res) => {
   try {
     const rooms = await Room.find();
@@ -11,6 +11,7 @@ exports.getAllRooms = async (req, res) => {
   }
 };
 
+// Get room details (with occupants populated)
 exports.getRoomDetails = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id).populate('occupants');
@@ -20,10 +21,12 @@ exports.getRoomDetails = async (req, res) => {
   }
 };
 
+// Allocate room to student
 exports.allocateRoom = async (req, res) => {
   const { studentId, roomId } = req.body;
+
   try {
-    const student = await Student.findById(studentId);
+    const student = await User.findOne({ _id: studentId, role: 'student' }); // ✅ Ensure it's a student
     const room = await Room.findById(roomId);
 
     if (!student || !room) {
@@ -33,7 +36,7 @@ exports.allocateRoom = async (req, res) => {
     student.roomNumber = roomId;
     await student.save();
 
-    room.students.push(studentId);
+    room.occupants.push(studentId); // ✅ Should match Room schema field
     await room.save();
 
     res.status(200).json({ success: true, message: 'Room allocated successfully' });
@@ -42,6 +45,7 @@ exports.allocateRoom = async (req, res) => {
   }
 };
 
+// Update room details
 exports.updateRoom = async (req, res) => {
   try {
     const updatedRoom = await Room.findByIdAndUpdate(req.params.id, req.body, {

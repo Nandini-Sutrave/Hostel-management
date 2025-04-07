@@ -156,38 +156,6 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
 
-      {/* Sidebar Navigation
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 ease-in-out`}>
-        <div className="flex items-center justify-between p-4 border-b">
-          <h1 className={`text-xl font-bold transition-opacity ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-            Hostel Hub
-          </h1>
-          <button 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded"
-          >
-            <Menu />
-          </button>
-        </div>
-        <nav className="mt-4">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveSection(item.section)}
-              className={`w-full flex items-center p-4 hover:bg-blue-50 ${
-                activeSection === item.section 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'text-gray-600'
-              }`}
-            >
-              <span className="mr-4">{item.icon}</span>
-              <span className={`transition-opacity ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-      </div> */}
 
       {/* Main Content Area */}
       <div className="flex-1 p-6 overflow-y-auto">

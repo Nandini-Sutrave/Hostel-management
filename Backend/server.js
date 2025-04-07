@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const { testConnection } = require('./config/db');
+const path = require('path');
 
 // Route imports
 const authRoutes = require('./routes/authroutes');
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/students', studentRoutes);
 app.use('/api/wardens', wardenRoutes);
 app.use('/api/rooms', roomRoutes);

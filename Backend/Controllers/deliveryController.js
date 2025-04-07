@@ -1,5 +1,5 @@
 const Delivery = require('../models/deliveryModel');
-const Student = require('../models/studentModel');
+const User = require('../models/userModel'); // ✅ Updated reference
 
 // Warden adds a new delivery for a student
 exports.createDelivery = async (req, res) => {
@@ -10,7 +10,7 @@ exports.createDelivery = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Student ID and item are required' });
     }
 
-    const student = await Student.findById(studentId);
+    const student = await User.findOne({ _id: studentId, role: 'student' }); // ✅ Check role
     if (!student) {
       return res.status(404).json({ success: false, error: 'Student not found' });
     }
@@ -30,7 +30,14 @@ exports.createDelivery = async (req, res) => {
 // Warden views all delivery logs
 exports.getAllDeliveries = async (req, res) => {
   try {
-    const deliveries = await Delivery.find().populate('student', 'name rollNumber roomNumber');
+    const deliveries = await Delivery.find()
+      .populate({
+        path: 'student',
+        select: 'name rollNumber roomNumber role',
+        match: { role: 'student' } // ✅ Show only students' deliveries
+      })
+      .sort({ createdAt: -1 });
+
     res.status(200).json({ success: true, data: deliveries });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

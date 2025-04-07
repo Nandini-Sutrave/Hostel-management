@@ -1,4 +1,4 @@
-const Student = require('../models/studentModel');
+const User = require('../models/userModel');
 const Attendance = require('../models/attendanceModel');
 const Fee = require('../models/feeModel');
 const Room = require('../models/roomModel');
@@ -7,7 +7,7 @@ const Complaint = require('../models/complaintModel');
 // Get logged-in student profile
 exports.getProfile = async (req, res) => {
   try {
-    const student = await Student.findById(req.user.id);
+    const student = await User.findById(req.user.id);
     res.status(200).json({ success: true, data: student });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -17,7 +17,7 @@ exports.getProfile = async (req, res) => {
 // Update student profile
 exports.updateProfile = async (req, res) => {
   try {
-    const student = await Student.findByIdAndUpdate(req.user.id, req.body, {
+    const student = await User.findByIdAndUpdate(req.user.id, req.body, {
       new: true,
       runValidators: true
     });
@@ -51,7 +51,7 @@ exports.getFees = async (req, res) => {
 // Get room details
 exports.getRoomDetails = async (req, res) => {
   try {
-    const student = await Student.findById(req.user.id).populate('roomNumber');
+    const student = await User.findById(req.user.id).populate('roomNumber');
     res.status(200).json({ success: true, data: student.roomNumber });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

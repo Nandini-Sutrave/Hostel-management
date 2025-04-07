@@ -1,5 +1,5 @@
 const Fee = require('../models/feeModel');
-const student = require('../models/studentModel');
+const User = require('../models/userModel'); // ✅ Updated
 
 // Student views own fees
 exports.getMyFees = async (req, res) => {
@@ -13,25 +13,28 @@ exports.getMyFees = async (req, res) => {
 
 // Warden adds or updates fees for a student
 exports.createOrUpdateFees = async (req, res) => {
-  const { studentId, baseAmount, fineAmount, status } = req.body;
+  const { studentId, baseAmount, fineAmount = 0, status } = req.body;
+
   try {
     let fee = await Fee.findOne({ student: studentId });
+
     if (fee) {
       // Update existing fee
       fee.baseAmount = baseAmount;
-      fee.fineAmount = fineAmount || fee.fineAmount;
-      fee.totalAmount = baseAmount + (fineAmount || fee.fineAmount);
+      fee.fineAmount = fineAmount;
+      fee.totalAmount = baseAmount + fineAmount;
       fee.status = status;
     } else {
       // Create new fee
       fee = new Fee({
         student: studentId,
         baseAmount,
-        fineAmount: fineAmount || 0,
-        totalAmount: baseAmount + (fineAmount || 0),
+        fineAmount,
+        totalAmount: baseAmount + fineAmount,
         status
       });
     }
+
     await fee.save();
     res.status(200).json({ success: true, data: fee });
   } catch (error) {
@@ -42,7 +45,11 @@ exports.createOrUpdateFees = async (req, res) => {
 // Warden views all students' fee details
 exports.getAllFees = async (req, res) => {
   try {
-    const fees = await Fee.find().populate('student', 'name rollNumber');
+    const fees = await Fee.find().populate({
+      path: 'student',
+      select: 'name rollNumber role',
+      match: { role: 'student' } // ✅ ensures only student users are fetched
+    });
     res.status(200).json({ success: true, data: fees });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

@@ -30,32 +30,60 @@
 // export default App;
 
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import Profile from "./pages/Profile";
 import StudentAttendancePage from "./pages/StudentAttendancePage";
 import StudentFeesPage from "./pages/StudentFeesPage";
-//import Complaints from "./pages/Complaints";
-//import Noticeboard from "./pages/Noticeboard";
+// import Complaints from "./pages/Complaints";
+// import Noticeboard from "./pages/Noticeboard";
 import Sidebar from "./pages/Sidebar";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Layout wrapping all authenticated pages
+const AppLayout = () => (
+  <div className="flex">
+    <Sidebar />
+    <div className="flex-1 p-6">
+      <Outlet /> {/* Child routes rendered here */}
+    </div>
+  </div>
+);
 
 const App = () => {
+  const isAuthenticated = !!localStorage.getItem("token");
+
   return (
-    <Router>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 p-6">
-          <Routes>
-            <Route path="/" element={<DashboardPage />} />
+    <>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/* Protected Routes */}
+        {isAuthenticated ? (
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/attendance" element={<StudentAttendancePage />} />
             <Route path="/fees" element={<StudentFeesPage />} />
             {/* <Route path="/complaints" element={<Complaints />} />
             <Route path="/noticeboard" element={<Noticeboard />} /> */}
-          </Routes>
-        </div>
-      </div>
-    </Router>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+        ) : (
+          <>
+            {/* If not logged in, redirect everything to login */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        )}
+      </Routes>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 };
 

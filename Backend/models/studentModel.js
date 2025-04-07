@@ -23,7 +23,7 @@ const studentSchema = new mongoose.Schema({
   roomNumber: { type: String, required: true }, // ✅ Room Number
   block: { type: String, required: true }, // ✅ Block
   semester: { type: String, required: true }, // ✅ Semester
-  course: { type: String, required: true }, // ✅ Course
+  
   year: Number,
   branch: String,
   dateOfBirth: Date,
