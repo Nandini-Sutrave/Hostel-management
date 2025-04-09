@@ -18,79 +18,48 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const { data } = await axios.get("/api/student/profile/"); // Adjust endpoint if needed
+        const token = localStorage.getItem("token"); // 👈 get token from localStorage
+  
+        const { data } = await axios.get("http://localhost:5000/api/students/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`, // 👈 add token to headers
+          },
+        });
+        console.log("Fetched student:", data);
+
         setStudentUser(data.data);
+       
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchStudentData();
   }, []);
+  
 
-  // Mock student data
-  // const studentUser = {
-  //   name: 'John Doe',
-  //   profileImage: '/api/placeholder/200/200',
-  //   roomNumber: '204',
-  //   block: 'A',
-  //   semester: '5th',
-  //   course: 'Computer Science',
-  //   stats: {
-  //     attendance: 92,
-  //     outstandingFees: 5000,
-  //     complaints: 1,
-  //     messCredit: 2500
-  //   }
-  // };
-
-  // const menuItems = [
-  //   { 
-  //     icon: <Home />, 
-  //     label: 'Dashboard', 
-  //     section: 'dashboard',
-  //     roles: ['student', 'warden'] 
-  //   },
-  //   { 
-  //     icon: <User />, 
-  //     label: 'Profile', 
-  //     section: 'profile',
-  //     roles: ['student', 'warden'] 
-  //   },
-  //   { 
-  //     icon: <Clock />, 
-  //     label: 'Attendance', 
-  //     section: 'attendance',
-  //     roles: ['student', 'warden'] 
-  //   },
-  //   { 
-  //     icon: <DollarSign />, 
-  //     label: 'Fees', 
-  //     section: 'fees',
-  //     roles: ['student', 'warden'] 
-  //   },
-  //   { 
-  //     icon: <AlertCircle />, 
-  //     label: 'Complaints', 
-  //     section: 'complaints',
-  //     roles: ['student', 'warden'] 
-  //   },
-  //   { 
-  //     icon: <Bell />, 
-  //     label: 'Noticeboard', 
-  //     section: 'noticeboard',
-  //     roles: ['student', 'warden'] 
-  //   }
-  // ];
+  
 
   const renderStudentDetails = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
     if (!studentUser) return <p>No student data available</p>;
 
-    const { name, profileImage, roomNumber, block, semester, course, stats } = studentUser;
+    const {
+      name,
+      email,
+      profileImage,
+      roomNumber,
+      block,
+      semester,
+      year,
+      branch,
+      phone,
+      gender,
+      bloodGroup
+    } = studentUser;
     return (
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <div className="flex items-center mb-6">
@@ -101,7 +70,7 @@ const Dashboard = () => {
           />
           <div>
             <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
-            <p className="text-gray-600">{course} - {semester} Semester</p>
+            <p className="text-gray-600">{semester} Semester</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -109,7 +78,7 @@ const Dashboard = () => {
             <h3 className="text-sm font-semibold text-blue-800 mb-2">Room Details</h3>
             <p className="text-lg font-bold text-blue-600">Room {roomNumber}, Block {block}</p>
           </div>
-          <div className="bg-green-100 p-4 rounded-lg">
+          {/* <div className="bg-green-100 p-4 rounded-lg">
             <h3 className="text-sm font-semibold text-green-800 mb-2">Attendance</h3>
             <p className="text-lg font-bold text-green-600">{stats.attendance}%</p>
           </div>
@@ -120,7 +89,7 @@ const Dashboard = () => {
           <div className="bg-red-100 p-4 rounded-lg">
             <h3 className="text-sm font-semibold text-red-800 mb-2">Outstanding Fees</h3>
             <p className="text-lg font-bold text-red-600">₹{stats.outstandingFees}</p>
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -154,7 +123,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen">
 
 
       {/* Main Content Area */}

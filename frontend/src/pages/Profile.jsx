@@ -9,6 +9,8 @@ const Profile = () => {
   const [studentUser, setStudentUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
   
 
@@ -61,13 +63,24 @@ const Profile = () => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/student/profile/67e8414d43e73a303472c00a'); // Replace with actual student ID
-        setStudentUser(response.data);
-        setFormData(response.data); // Initialize formData
-      } catch (error) {
-        console.error('Error fetching student data:', error);
+        const token = localStorage.getItem("token"); // 👈 get token from localStorage
+  
+        const { data } = await axios.get("http://localhost:5000/api/students/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`, // 👈 add token to headers
+          },
+        });
+        console.log("Fetched student:", data);
+
+        setStudentUser(data.data);
+       
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
+  
     fetchStudentData();
   }, []);
 
@@ -187,7 +200,7 @@ const Profile = () => {
           <div className="flex flex-col items-center">
             <div className="relative mb-4">
               <img 
-                src={studentUser.profileImage} 
+                src={`http://localhost:5000${studentUser?.profileImage}`} 
                 alt={studentUser.name} 
                 className="w-40 h-40 rounded-full object-cover border-4 border-blue-500"
               />
@@ -265,21 +278,21 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Parent Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Guardian Name</label>
                   <input
                     type="text"
                     name="parentName"
-                    value={formData.parentName}
+                    value={formData.guardianName}
                     onChange={handleInputChange}
                     className="mt-1 p-2 w-full border rounded-md"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Parent Phone</label>
+                  <label className="block text-sm font-medium text-gray-700">Guardian Phone</label>
                   <input
                     type="text"
                     name="parentPhone"
-                    value={formData.parentPhone}
+                    value={formData.guardianPhone}
                     onChange={handleInputChange}
                     className="mt-1 p-2 w-full border rounded-md"
                   />
@@ -294,6 +307,7 @@ const Profile = () => {
 />
 <label htmlFor="profileImageUpload" className="absolute bottom-2 right-2 bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600 cursor-pointer">
   <Camera size={20} />
+  
 </label>
 
                 </div>
@@ -321,12 +335,12 @@ const Profile = () => {
                   <p className="text-gray-800">{studentUser.address}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Parent Name</h4>
-                  <p className="text-gray-800">{studentUser.parentName}</p>
+                  <h4 className="text-sm font-medium text-gray-500">Guardian Name</h4>
+                  <p className="text-gray-800">{studentUser.guardianName}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Parent Phone</h4>
-                  <p className="text-gray-800">{studentUser.parentPhone}</p>
+                  <h4 className="text-sm font-medium text-gray-500">Guardian Phone</h4>
+                  <p className="text-gray-800">{studentUser.guardianPhone}</p>
                 </div>
               </div>
             )}
@@ -337,16 +351,16 @@ const Profile = () => {
           <h3 className="text-xl font-semibold mb-4">Academic & Hostel Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-700">Course</h4>
-              <p className="text-lg font-semibold">{studentUser.course}</p>
+              <h4 className="text-sm font-medium text-blue-700">Branch</h4>
+              <p className="text-lg font-semibold">{studentUser.branch}</p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="text-sm font-medium text-blue-700">Semester</h4>
               <p className="text-lg font-semibold">{studentUser.semester}</p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-700">Admission Year</h4>
-              <p className="text-lg font-semibold">{studentUser.admissionYear}</p>
+              <h4 className="text-sm font-medium text-blue-700">Year</h4>
+              <p className="text-lg font-semibold">{studentUser.year}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <h4 className="text-sm font-medium text-green-700">Room Number</h4>
@@ -367,7 +381,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen">
       {/* Sidebar Navigation */}
       {/* <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 ease-in-out`}>
         <div className="flex items-center justify-between p-4 border-b">

@@ -45,10 +45,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 // Layout wrapping all authenticated pages
 const AppLayout = () => (
-  <div className="flex">
-    <Sidebar />
-    <div className="flex-1 p-6">
-      <Outlet /> {/* Child routes rendered here */}
+  <div className="flex min-h-screen">
+    {/* Sidebar fixed */}
+    <div className="w-64 h-screen fixed top-0 left-0 bg-white shadow-lg z-50">
+      <Sidebar />
+    </div>
+
+    {/* Main content with left margin */}
+    <div
+      className="flex-1 ml-64 p-6 bg-cover bg-center"
+      style={{ backgroundImage: "url('bg4.jpg')" }} // or your actual image path
+    >
+      <Outlet />
     </div>
   </div>
 );

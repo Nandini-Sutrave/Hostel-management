@@ -105,7 +105,7 @@ exports.deleteComplaint = async (req, res) => {
   }
 };
 
-// Optional: Mark complaint as resolved (if student can mark their own complaint done)
+// Optional: Mark complaint as resolved
 exports.resolveComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.findOneAndUpdate(
@@ -121,5 +121,33 @@ exports.resolveComplaint = async (req, res) => {
     res.status(200).json({ success: true, data: complaint });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// controllers/studentController.js
+
+//const Student = require('../models/UserModel');
+
+exports.uploadProfilePicture = async (req, res) => {
+  try {
+    const studentId = req.user.id; // assuming you're using auth middleware that sets req.user
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' });
+    }
+
+    const imagePath = `/uploads/profileImage/${req.file.filename}`;
+
+    const updatedStudent = await User.findByIdAndUpdate(
+      studentId,
+      { profileImage: imagePath },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: 'Profile image uploaded successfully',
+      data: updatedStudent
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Upload failed', error: error.message });
   }
 };

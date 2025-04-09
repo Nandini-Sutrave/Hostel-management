@@ -3,6 +3,7 @@ const router = express.Router();
 const roomController = require('../controllers/roomController');
 const authMiddleware = require('../middleware/authMiddleware');
 
+
 // Protect all room routes
 router.use(authMiddleware.protect);
 

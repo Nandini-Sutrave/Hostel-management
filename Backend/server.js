@@ -20,6 +20,15 @@ const noticeRoutes = require('./routes/noticeRoutes');
 const settingRoutes= require('./routes/settingRoutes');
 const app = express();
 
+const fs = require('fs');
+
+// Ensure uploads/profileImages directory exists
+const uploadDir = path.join(__dirname, 'uploads', 'profileImages');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+
 // Middleware
 app.use(cors());
 app.use(helmet());
