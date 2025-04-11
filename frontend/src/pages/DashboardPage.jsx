@@ -49,16 +49,12 @@ const Dashboard = () => {
 
     const {
       name,
-      email,
+      
       profileImage,
       roomNumber,
       block,
       semester,
-      year,
-      branch,
-      phone,
-      gender,
-      bloodGroup
+      
     } = studentUser;
     return (
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">

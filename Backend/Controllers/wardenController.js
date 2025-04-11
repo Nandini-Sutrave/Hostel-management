@@ -5,16 +5,35 @@ const Room = require('../models/roomModel');
 const User = require('../models/userModel'); // ✅ Unified user model
 
 // Dashboard
-exports.getDashboard = async (req, res) => {
+const Student = require('../models/studentModel');
+const Room = require('../models/roomModel');
+const Complaint = require('../models/complaintModel');
+const User = require('../models/userModel'); // assuming warden is also in 'User'
+
+exports.getDashboardDetails = async (req, res) => {
   try {
-    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalStudents = await Student.countDocuments();
     const totalRooms = await Room.countDocuments();
-    const complaints = await Complaint.find({ status: 'pending' }).populate('student');
-    res.status(200).json({ success: true, data: { totalStudents, totalRooms, complaints } });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    const complaints = await Complaint.find();
+
+    const wardenProfile = await User.findById(req.user._id).select('-password');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalStudents,
+        totalRooms,
+        complaints,
+        wardenProfile, // 👈 include this in the response
+      }
+    });
+  } catch (err) {
+    console.error("Dashboard error:", err);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+
 
 // Get all students
 exports.getAllStudents = async (req, res) => {

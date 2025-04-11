@@ -37,6 +37,8 @@ import StudentAttendancePage from "./pages/StudentAttendancePage";
 import StudentFeesPage from "./pages/StudentFeesPage";
 // import Complaints from "./pages/Complaints";
 // import Noticeboard from "./pages/Noticeboard";
+import WardenDashboard from "./pages/WardenDashboard";
+import WardenAttendance from "./pages/WardenAttendance";
 import Sidebar from "./pages/Sidebar";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -54,7 +56,7 @@ const AppLayout = () => (
     {/* Main content with left margin */}
     <div
       className="flex-1 ml-64 p-6 bg-cover bg-center"
-      style={{ backgroundImage: "url('bg4.jpg')" }} // or your actual image path
+      style={{ backgroundImage: "url('bg7.jpg')" }} // or your actual image path
     >
       <Outlet />
     </div>
@@ -74,9 +76,9 @@ const App = () => {
         {/* Protected Routes */}
         {isAuthenticated ? (
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<WardenDashboard />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/attendance" element={<StudentAttendancePage />} />
+            <Route path="/attendance" element={<WardenAttendance />} />
             <Route path="/fees" element={<StudentFeesPage />} />
             {/* <Route path="/complaints" element={<Complaints />} />
             <Route path="/noticeboard" element={<Noticeboard />} /> */}

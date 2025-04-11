@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/students', studentRoutes);
-app.use('/api/wardens', wardenRoutes);
+app.use('/api/warden', wardenRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);

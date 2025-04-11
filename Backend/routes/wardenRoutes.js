@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const wardenController = require('../controllers/wardenController');
+const wardenController = require('../Controllers/wardenController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Protect all warden routes
