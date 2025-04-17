@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const wardenController = require('../Controllers/wardenController');
+const wardenController = require('../controllers/wardenController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Protect all warden routes
@@ -8,7 +8,7 @@ router.use(authMiddleware.protect);
 router.use(authMiddleware.restrictTo('warden', 'admin'));
 
 // Student management
-router.get('/dashboard', wardenController.getDashboard);
+router.get('/dashboard', wardenController.getDashboardDetails);
 router.get('/students', wardenController.getAllStudents);
 router.get('/students/:id', wardenController.getStudentDetails);
 router.patch('/students/:id', wardenController.updateStudentDetails);

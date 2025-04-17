@@ -22,11 +22,13 @@ exports.protect = async (req, res, next) => {
 };
 // middlewares/authMiddleware.js
 
-exports.restrictTo = (role) => {
+// Accepts multiple roles
+exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    if (!req.user || req.user.role !== role) {
+    if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Access denied" });
     }
     next();
   };
 };
+

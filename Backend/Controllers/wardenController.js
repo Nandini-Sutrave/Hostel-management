@@ -5,14 +5,14 @@ const Room = require('../models/roomModel');
 const User = require('../models/userModel'); // ✅ Unified user model
 
 // Dashboard
-const Student = require('../models/studentModel');
-const Room = require('../models/roomModel');
-const Complaint = require('../models/complaintModel');
-const User = require('../models/userModel'); // assuming warden is also in 'User'
+
+
+ 
 
 exports.getDashboardDetails = async (req, res) => {
   try {
-    const totalStudents = await Student.countDocuments();
+    const totalStudents = await User.countDocuments({ role: 'student' });
+
     const totalRooms = await Room.countDocuments();
     const complaints = await Complaint.find();
 

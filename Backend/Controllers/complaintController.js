@@ -2,11 +2,11 @@ const Complaint = require('../models/complaintModel');
 
 // Student submits a complaint
 exports.submitComplaint = async (req, res) => {
-  const { title, description } = req.body;
+  const { category, description } = req.body;
   try {
     const complaint = new Complaint({
       student: req.user.id,
-      title,
+      category,
       description,
       status: 'Pending'
     });

@@ -1,42 +1,11 @@
-// //import { useState } from 'react'
-// import React from "react";
-// import Dashboard from "./pages/DashboardPage";
-// import Profile from "./pages/Profile";
-// import './App.css'
-// import StudentAttendancePage from "./pages/StudentAttendancePage";
-// import WardenAttendancePage from "./pages/WardenAttendancePage";
-// import StudentFeesPage from "./pages/StudentFeesPage";
-// import RoomAllocationApp from "./pages/RoomAllocationApp";
-// // import WardenDashboard from "./pages/WardenDashboard";
-
-
-
-// function App() {
-  
-//   return (
-//     <div className="App">
-//       {/* <Dashboard /> */}
-//       {/* <Profile/> */}
-//       {/* <WardenDashboard /> */}
-//       <StudentAttendancePage/>
-//       {/* <WardenAttendancePage/> */}
-//       {/* <StudentFeesPage/> */}
-//       {/* <RoomAllocationApp/> */}
-      
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import Profile from "./pages/Profile";
 import StudentAttendancePage from "./pages/StudentAttendancePage";
 import StudentFeesPage from "./pages/StudentFeesPage";
-// import Complaints from "./pages/Complaints";
-// import Noticeboard from "./pages/Noticeboard";
+import CombinedComplaintPage from "./pages/complaintPage";
+import NoticePage from "./pages/noticePage";
 import WardenDashboard from "./pages/WardenDashboard";
 import WardenAttendance from "./pages/WardenAttendance";
 import Sidebar from "./pages/Sidebar";
@@ -64,7 +33,19 @@ const AppLayout = () => (
 );
 
 const App = () => {
+  const [userRole, setUserRole] = useState(null);
   const isAuthenticated = !!localStorage.getItem("token");
+  
+  useEffect(() => {
+    // Get user role from localStorage or decode from JWT token
+    const role = localStorage.getItem("role") || "student"; // Default to student if not set
+    setUserRole(role);
+  }, []);
+
+  // If user data is still loading, show a loading indicator
+  if (isAuthenticated && userRole === null) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
 
   return (
     <>
@@ -76,13 +57,30 @@ const App = () => {
         {/* Protected Routes */}
         {isAuthenticated ? (
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<WardenDashboard />} />
+            {/* Dynamic Dashboard based on user role */}
+            <Route path="/dashboard" element={<DashboardPage/>} />
+            
             <Route path="/profile" element={<Profile />} />
-            <Route path="/attendance" element={<WardenAttendance />} />
-            <Route path="/fees" element={<StudentFeesPage />} />
-            {/* <Route path="/complaints" element={<Complaints />} />
-            <Route path="/noticeboard" element={<Noticeboard />} /> */}
+            
+            
+            
+                <Route path="/attendance" element={<WardenAttendance />} />
+              
+            
+          
+                <Route path="/fees" element={<StudentFeesPage />} />
+             
+            
+            
+            {/* Common routes for both roles */}
+            <Route path="/complaints" element={<CombinedComplaintPage />} />
+            <Route path="/noticeboard" element={<NoticePage />} />
+            
+            {/* Default route */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            
+            {/* Catch any other paths and redirect to dashboard */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         ) : (
           <>
